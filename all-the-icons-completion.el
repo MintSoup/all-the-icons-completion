@@ -57,19 +57,7 @@
 (cl-defgeneric all-the-icons-completion-get-icon (cand cat)
   "Return an appropriate icon for candidate CAND in category CAT.")
 
-(cl-defmethod all-the-icons-completion-get-icon ((cand string) (cat (eql 'buffer)))
-  (when (all-the-icons-completion--display-icons)
-	(let ((icon (with-current-buffer (get-buffer cand)
-                  (if (eq major-mode 'dired-mode)
-                      (all-the-icons-icon-for-dir cand)
-					(all-the-icons-icon-for-buffer)))))
-      (all-the-icons-completion--format-icon
-	   (if (or (null icon) (symbolp icon))
-		   (all-the-icons-faicon "file-o" :face 'all-the-icons-dsilver :height 0.9 :v-adjust 0.0)
-         (propertize icon 'display '(raise 0.0)))))))
-
-(cl-defmethod all-the-icons-completion-get-icon ((cand string) (cat (eql 'file)))
-  "Display file icon for CAND all-the-icons-completion."
+(defun all-the-icons-completion-get-icon--impl (cand)
   (when (all-the-icons-completion--display-icons)
     (let ((icon (cond
                  ((directory-name-p cand)
@@ -80,6 +68,12 @@
        (if (or (null icon) (symbolp icon))
            (all-the-icons-faicon "file-o" :face 'all-the-icons-dsilver :height 0.9 :v-adjust 0.0)
          (propertize icon 'display '(raise 0.0)))))))
+
+(cl-defmethod all-the-icons-completion-get-icon ((cand string) (cat (eql 'file)))
+  (all-the-icons-completion-get-icon--impl cand))
+
+(cl-defmethod all-the-icons-completion-get-icon ((cand buffer) (cat (eql 'buffer)))
+  (all-the-icons-completion-get-icon--impl (buffer-name cand)))
 
 (cl-defmethod all-the-icons-completion-get-icon ((cand string) (cat (eql 'project-file)))
   (all-the-icons-completion-get-icon cand 'file))
