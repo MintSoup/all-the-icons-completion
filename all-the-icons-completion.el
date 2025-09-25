@@ -73,7 +73,8 @@
   (all-the-icons-completion-get-icon--impl cand))
 
 (cl-defmethod all-the-icons-completion-get-icon ((cand buffer) (cat (eql 'buffer)))
-  (all-the-icons-completion-get-icon--impl (buffer-name cand)))
+  (all-the-icons-completion-get-icon--impl (or (buffer-file-name cand)
+											   (buffer-name cand))))
 
 (cl-defmethod all-the-icons-completion-get-icon ((cand string) (cat (eql 'project-file)))
   (all-the-icons-completion-get-icon cand 'file))
